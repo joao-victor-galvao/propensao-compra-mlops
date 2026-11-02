@@ -1,0 +1,5 @@
+{
+  "logistic_regression": "3b9a32e838b2421d963dcddacb4f53a4",
+  "random_forest": "30f535d42472451181ab5575ee451d0a",
+  "hist_gradient_boosting": "b003587876c041238822cdae036a52cd"
+}
