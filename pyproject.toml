@@ -1,0 +1,53 @@
+[project]
+name = "purchase-propensity"
+version = "0.1.0"
+description = "Pipeline MLOps para prever a propensão de compra de usuários de e-commerce."
+authors = [{ name = "Joao Victor Galvao", email = "joaovictorgalvao1998@gmail.com" }]
+readme = "README.md"
+requires-python = ">=3.12,<3.13"
+dependencies = ["scikit-learn (>=1.9.1,<2.0.0)", "pandas (>=3.1.0,<4.0.0)", "pyarrow (<26)", "mlflow (>=3.17.2,<4.0.0)", "dvc[s3] (>=3.67.1,<4.0.0)", "pydantic (>=2.14.2,<3.0.0)", "pydantic-settings (>=2.16.2,<3.0.0)", "pyyaml (>=6.0.3,<7.0.0)", "matplotlib (>=3.11.2,<4.0.0)", "fastapi (>=0.162.0,<0.163.0)", "uvicorn[standard] (>=0.54.0,<0.55.0)"]
+
+[tool.poetry]
+packages = [{ include = "purchase_propensity", from = "src" }]
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^9.2.0"
+pytest-cov = "^7.1.0"
+ruff = "^0.17.3"
+mypy = "^2.4.1"
+pre-commit = "^4.7.0"
+httpx = "^0.28.1"
+pandas-stubs = "^3.1.0.261029"
+types-pyyaml = "^6.0.12.20261030"
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "N", "UP", "B", "SIM", "C90", "ANN", "D", "PL", "RUF"]
+ignore = ["D100", "D104", "PLR0913"]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["D", "ANN", "PLR2004"]
+
+[tool.ruff.lint.mccabe]
+max-complexity = 6
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+ignore_missing_imports = true
+mypy_path = "src"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra --cov=purchase_propensity --cov-report=term-missing"
