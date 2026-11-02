@@ -1,6 +1,7 @@
 # Fluxo completo:
 #   docker compose up -d mlflow          # UI em http://localhost:5000
 #   docker compose run --rm pipeline     # dvc repro: preprocess -> train -> evaluate -> register
+#     (com MLflow vazio, force: docker compose run --rm pipeline dvc repro -f -s preprocess train evaluate register)
 #   docker compose up -d --build api     # API em http://localhost:8000/docs
 
 name: purchase-propensity
