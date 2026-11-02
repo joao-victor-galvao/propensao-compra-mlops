@@ -52,6 +52,7 @@ class RegistryParams(BaseModel):
     model_name: str
     alias: str
     export_dir: Path
+    report_path: Path
 
 
 class Params(BaseModel):

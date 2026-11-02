@@ -36,3 +36,4 @@ registry:
   model_name: purchase-propensity-model
   alias: champion
   export_dir: models/champion
+  report_path: reports/champion.json
