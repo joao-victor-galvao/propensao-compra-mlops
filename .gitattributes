@@ -1,0 +1,4 @@
+# Finais de linha consistentes entre Windows, Linux (Docker) e CI
+* text=auto eol=lf
+*.png binary
+*.parquet binary
