@@ -34,3 +34,6 @@ mlflow.db
 .DS_Store
 Thumbs.db
 desktop.ini
+
+# Configuração local do Poetry (caminho do venv desta máquina)
+poetry.toml
