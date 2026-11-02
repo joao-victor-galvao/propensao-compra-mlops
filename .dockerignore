@@ -1,0 +1,30 @@
+# Somente o necessário entra no contexto de build da imagem
+.git/
+.github/
+.dvc/cache/
+.dvc/tmp/
+.venv/
+**/__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+
+# Segredos nunca entram na imagem
+.env
+.dvc/config.local
+poetry.toml
+
+# Dados e artefatos de experimento ficam fora (montados por volume ou baixados via DVC)
+data/
+mlruns/
+mlartifacts/
+mlflow.db
+reports/
+notebooks/
+docs/
+
+.vscode/
+.idea/
