@@ -19,6 +19,7 @@ stages:
       - src/purchase_propensity/features
       - src/purchase_propensity/models/factory.py
       - src/purchase_propensity/models/trainer.py
+      - src/purchase_propensity/io.py
       - src/purchase_propensity/pipelines/train.py
     params:
       - seed
@@ -34,6 +35,7 @@ stages:
       - data/processed/test.parquet
       - reports/train_runs.json
       - src/purchase_propensity/models/evaluator.py
+      - src/purchase_propensity/io.py
       - src/purchase_propensity/pipelines/evaluate.py
     params:
       - evaluate
@@ -49,6 +51,7 @@ stages:
     deps:
       - reports/metrics.json
       - src/purchase_propensity/models/registry.py
+      - src/purchase_propensity/io.py
       - src/purchase_propensity/pipelines/register.py
     params:
       - registry
