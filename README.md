@@ -204,6 +204,9 @@ curl -X POST http://localhost:8000/predict -H "Content-Type: application/json" -
 As entradas são validadas pelo Pydantic (faixas e categorias); valores inválidos retornam `422`. O limiar de
 decisão é configurável por `DECISION_THRESHOLD`.
 
+**Deploy em nuvem (opcional):** `poetry run python scripts/deploy_hf_space.py` publica a mesma imagem
+(alvo `api`) no Hugging Face Spaces. Atenção: Spaces com SDK Docker exigem conta HF PRO.
+
 ## Qualidade e CI
 
 O GitHub Actions ([`ci.yml`](.github/workflows/ci.yml)) roda em todo PR e push na `main`:
