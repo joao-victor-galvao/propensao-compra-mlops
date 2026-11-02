@@ -1,0 +1,36 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+dist/
+build/
+
+# Ferramentas
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+
+# Segredos e configuração local
+.env
+
+# Dados e modelos (versionados pelo DVC, não pelo Git)
+/data/raw/*
+/data/processed/*
+/models/*
+!**/.gitkeep
+
+# MLflow local
+mlruns/
+mlartifacts/
+mlflow.db
+
+# IDE / SO
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+desktop.ini
