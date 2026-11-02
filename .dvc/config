@@ -1,0 +1,8 @@
+[cache]
+    type = copy
+[core]
+    autostage = true
+    remote = origin
+['remote "origin"']
+    url = s3://dvc
+    endpointurl = https://dagshub.com/joao-victor-galvao/propensao-compra-mlops.s3

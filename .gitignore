@@ -17,11 +17,7 @@ htmlcov/
 # Segredos e configuração local
 .env
 
-# Dados e modelos (versionados pelo DVC, não pelo Git)
-/data/raw/*
-/data/processed/*
-/models/*
-!**/.gitkeep
+# Dados e modelos: o DVC gera um .gitignore em cada pasta para os arquivos que rastreia
 
 # MLflow local
 mlruns/
