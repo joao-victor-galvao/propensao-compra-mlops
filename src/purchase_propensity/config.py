@@ -18,6 +18,7 @@ class Settings(BaseSettings):
     mlflow_tracking_uri: str = "sqlite:///mlflow.db"
     mlflow_experiment_name: str = "purchase-propensity"
     model_path: Path = Path("models/champion")
+    decision_threshold: float = Field(default=0.5, gt=0, lt=1)
 
 
 class DataParams(BaseModel):
