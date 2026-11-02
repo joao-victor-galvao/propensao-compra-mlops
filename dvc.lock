@@ -7,6 +7,7 @@ stages:
       hash: md5
       md5: cc6ec1db03b4f10f8de52c56ff48b085
       size: 1072063
+      isexec: true
     - path: src/purchase_propensity/data
       hash: md5
       md5: 54ac33a777d6a6c1f59e8918b7ab5d64.dir
@@ -16,6 +17,7 @@ stages:
       hash: md5
       md5: 2b919a92f163f86dcfb9fc1654ab67d5
       size: 1182
+      isexec: true
     params:
       params.yaml:
         data:
@@ -45,18 +47,26 @@ stages:
       md5: afc12be508f354f36952675ed1327884.dir
       size: 1209
       nfiles: 2
+    - path: src/purchase_propensity/io.py
+      hash: md5
+      md5: f1741cc552af5f37e663c4e436174eb1
+      size: 730
+      isexec: true
     - path: src/purchase_propensity/models/factory.py
       hash: md5
       md5: 1fcb3af319ee6a241709c86d633c3822
       size: 2123
+      isexec: true
     - path: src/purchase_propensity/models/trainer.py
       hash: md5
       md5: 6488e633c9f2632242d49bb8e7490326
       size: 3704
+      isexec: true
     - path: src/purchase_propensity/pipelines/train.py
       hash: md5
       md5: c300fff7688d60af8556f4dc6b44f94f
       size: 1390
+      isexec: true
     params:
       params.yaml:
         seed: 42
@@ -78,7 +88,7 @@ stages:
     outs:
     - path: reports/train_runs.json
       hash: md5
-      md5: e84dc46810e0fe6256b3c2bdaa54db86
+      md5: 55a7eae240fb82b1d5cd3449a8990906
       size: 183
   evaluate:
     cmd: python -m purchase_propensity.pipelines.evaluate
@@ -89,16 +99,23 @@ stages:
       size: 79958
     - path: reports/train_runs.json
       hash: md5
-      md5: e84dc46810e0fe6256b3c2bdaa54db86
+      md5: 55a7eae240fb82b1d5cd3449a8990906
       size: 183
+    - path: src/purchase_propensity/io.py
+      hash: md5
+      md5: f1741cc552af5f37e663c4e436174eb1
+      size: 730
+      isexec: true
     - path: src/purchase_propensity/models/evaluator.py
       hash: md5
       md5: 89289ba8158aca6f2e97a4961e5a0b36
       size: 2734
+      isexec: true
     - path: src/purchase_propensity/pipelines/evaluate.py
       hash: md5
       md5: 9d6b450ceb2e07e7ff3d064c6f49e94d
       size: 2649
+      isexec: true
     params:
       params.yaml:
         evaluate:
@@ -108,28 +125,35 @@ stages:
     outs:
     - path: reports/metrics.json
       hash: md5
-      md5: 000349824182f78e0543d7a5a02ba3ed
+      md5: a225fc37af36857fd5f95e665479f29f
       size: 1053
     - path: reports/plots
       hash: md5
-      md5: 53c6509d139ccbb853021f0b88d35944.dir
-      size: 225781
+      md5: 094eb1d65c1c9c740481a5b1dfb22b32.dir
+      size: 249108
       nfiles: 9
   register:
     cmd: python -m purchase_propensity.pipelines.register
     deps:
     - path: reports/metrics.json
       hash: md5
-      md5: 000349824182f78e0543d7a5a02ba3ed
+      md5: a225fc37af36857fd5f95e665479f29f
       size: 1053
+    - path: src/purchase_propensity/io.py
+      hash: md5
+      md5: f1741cc552af5f37e663c4e436174eb1
+      size: 730
+      isexec: true
     - path: src/purchase_propensity/models/registry.py
       hash: md5
       md5: d674a5aa67450303fb114333b4106821
       size: 3238
+      isexec: true
     - path: src/purchase_propensity/pipelines/register.py
       hash: md5
       md5: 773f3f0b2d982cddb3318fa215760677
       size: 1748
+      isexec: true
     params:
       params.yaml:
         registry:
@@ -141,10 +165,10 @@ stages:
     outs:
     - path: models/champion
       hash: md5
-      md5: bea8ba55da21f0964fd8eab3a76be5a8.dir
-      size: 2704192
+      md5: 6578de28d8c16615832e05e2ebd6139f.dir
+      size: 2714778
       nfiles: 8
     - path: reports/champion.json
       hash: md5
-      md5: affaaa6f5e1fb5956b2279e8818f2d4a
+      md5: 897d7d2e8cbf460eee24e096d68b79ca
       size: 215
