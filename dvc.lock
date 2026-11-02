@@ -1,0 +1,35 @@
+schema: '2.0'
+stages:
+  preprocess:
+    cmd: python -m purchase_propensity.pipelines.preprocess
+    deps:
+    - path: data/raw/online_shoppers_intention.csv
+      hash: md5
+      md5: cc6ec1db03b4f10f8de52c56ff48b085
+      size: 1072063
+    - path: src/purchase_propensity/data
+      hash: md5
+      md5: 54ac33a777d6a6c1f59e8918b7ab5d64.dir
+      size: 4337
+      nfiles: 5
+    - path: src/purchase_propensity/pipelines/preprocess.py
+      hash: md5
+      md5: 2b919a92f163f86dcfb9fc1654ab67d5
+      size: 1182
+    params:
+      params.yaml:
+        data:
+          raw_path: data/raw/online_shoppers_intention.csv
+          train_path: data/processed/train.parquet
+          test_path: data/processed/test.parquet
+          test_size: 0.2
+        seed: 42
+    outs:
+    - path: data/processed/test.parquet
+      hash: md5
+      md5: 8118f7aed6abc88f788a1b0578ca8616
+      size: 79958
+    - path: data/processed/train.parquet
+      hash: md5
+      md5: 3e0af5e5d1da50615d547fbbb0a297b5
+      size: 264549

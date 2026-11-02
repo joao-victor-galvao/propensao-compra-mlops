@@ -1,0 +1,13 @@
+stages:
+  preprocess:
+    cmd: python -m purchase_propensity.pipelines.preprocess
+    deps:
+      - data/raw/online_shoppers_intention.csv
+      - src/purchase_propensity/data
+      - src/purchase_propensity/pipelines/preprocess.py
+    params:
+      - seed
+      - data
+    outs:
+      - data/processed/train.parquet
+      - data/processed/test.parquet
