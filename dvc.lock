@@ -78,8 +78,8 @@ stages:
     outs:
     - path: reports/train_runs.json
       hash: md5
-      md5: 5915e80e0cb851ed2cd825af2fb17568
-      size: 188
+      md5: e84dc46810e0fe6256b3c2bdaa54db86
+      size: 183
   evaluate:
     cmd: python -m purchase_propensity.pipelines.evaluate
     deps:
@@ -89,8 +89,8 @@ stages:
       size: 79958
     - path: reports/train_runs.json
       hash: md5
-      md5: 5915e80e0cb851ed2cd825af2fb17568
-      size: 188
+      md5: e84dc46810e0fe6256b3c2bdaa54db86
+      size: 183
     - path: src/purchase_propensity/models/evaluator.py
       hash: md5
       md5: 89289ba8158aca6f2e97a4961e5a0b36
@@ -108,8 +108,8 @@ stages:
     outs:
     - path: reports/metrics.json
       hash: md5
-      md5: caef0888150c03982d3f3a221aca5744
-      size: 1088
+      md5: 000349824182f78e0543d7a5a02ba3ed
+      size: 1053
     - path: reports/plots
       hash: md5
       md5: 53c6509d139ccbb853021f0b88d35944.dir
@@ -120,8 +120,8 @@ stages:
     deps:
     - path: reports/metrics.json
       hash: md5
-      md5: caef0888150c03982d3f3a221aca5744
-      size: 1088
+      md5: 000349824182f78e0543d7a5a02ba3ed
+      size: 1053
     - path: src/purchase_propensity/models/registry.py
       hash: md5
       md5: d674a5aa67450303fb114333b4106821
@@ -146,5 +146,5 @@ stages:
       nfiles: 8
     - path: reports/champion.json
       hash: md5
-      md5: b7534e2b21d5c55154baba5f60ef07d6
-      size: 223
+      md5: affaaa6f5e1fb5956b2279e8818f2d4a
+      size: 215
