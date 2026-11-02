@@ -1,0 +1,8 @@
+{
+  "model_name": "purchase-propensity-model",
+  "version": "1",
+  "alias": "champion",
+  "model_type": "hist_gradient_boosting",
+  "run_id": "381a82417c54402c80b4288f081c1424",
+  "test_pr_auc": 0.740474016748965
+}
