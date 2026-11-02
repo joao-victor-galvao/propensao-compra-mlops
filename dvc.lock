@@ -33,3 +33,118 @@ stages:
       hash: md5
       md5: 3e0af5e5d1da50615d547fbbb0a297b5
       size: 264549
+  train:
+    cmd: python -m purchase_propensity.pipelines.train
+    deps:
+    - path: data/processed/train.parquet
+      hash: md5
+      md5: 3e0af5e5d1da50615d547fbbb0a297b5
+      size: 264549
+    - path: src/purchase_propensity/features
+      hash: md5
+      md5: afc12be508f354f36952675ed1327884.dir
+      size: 1209
+      nfiles: 2
+    - path: src/purchase_propensity/models/factory.py
+      hash: md5
+      md5: 1fcb3af319ee6a241709c86d633c3822
+      size: 2123
+    - path: src/purchase_propensity/models/trainer.py
+      hash: md5
+      md5: 6488e633c9f2632242d49bb8e7490326
+      size: 3704
+    - path: src/purchase_propensity/pipelines/train.py
+      hash: md5
+      md5: c300fff7688d60af8556f4dc6b44f94f
+      size: 1390
+    params:
+      params.yaml:
+        seed: 42
+        train:
+          cv_folds: 5
+          runs_path: reports/train_runs.json
+          models:
+            logistic_regression:
+              C: 1.0
+              max_iter: 1000
+            random_forest:
+              n_estimators: 300
+              max_depth: 12
+              min_samples_leaf: 2
+            hist_gradient_boosting:
+              learning_rate: 0.05
+              max_iter: 300
+              max_leaf_nodes: 31
+    outs:
+    - path: reports/train_runs.json
+      hash: md5
+      md5: 5915e80e0cb851ed2cd825af2fb17568
+      size: 188
+  evaluate:
+    cmd: python -m purchase_propensity.pipelines.evaluate
+    deps:
+    - path: data/processed/test.parquet
+      hash: md5
+      md5: 8118f7aed6abc88f788a1b0578ca8616
+      size: 79958
+    - path: reports/train_runs.json
+      hash: md5
+      md5: 5915e80e0cb851ed2cd825af2fb17568
+      size: 188
+    - path: src/purchase_propensity/models/evaluator.py
+      hash: md5
+      md5: 89289ba8158aca6f2e97a4961e5a0b36
+      size: 2734
+    - path: src/purchase_propensity/pipelines/evaluate.py
+      hash: md5
+      md5: 9d6b450ceb2e07e7ff3d064c6f49e94d
+      size: 2649
+    params:
+      params.yaml:
+        evaluate:
+          threshold: 0.5
+          metrics_path: reports/metrics.json
+          plots_dir: reports/plots
+    outs:
+    - path: reports/metrics.json
+      hash: md5
+      md5: caef0888150c03982d3f3a221aca5744
+      size: 1088
+    - path: reports/plots
+      hash: md5
+      md5: 53c6509d139ccbb853021f0b88d35944.dir
+      size: 225781
+      nfiles: 9
+  register:
+    cmd: python -m purchase_propensity.pipelines.register
+    deps:
+    - path: reports/metrics.json
+      hash: md5
+      md5: caef0888150c03982d3f3a221aca5744
+      size: 1088
+    - path: src/purchase_propensity/models/registry.py
+      hash: md5
+      md5: d674a5aa67450303fb114333b4106821
+      size: 3238
+    - path: src/purchase_propensity/pipelines/register.py
+      hash: md5
+      md5: 773f3f0b2d982cddb3318fa215760677
+      size: 1748
+    params:
+      params.yaml:
+        registry:
+          selection_metric: test_pr_auc
+          model_name: purchase-propensity-model
+          alias: champion
+          export_dir: models/champion
+          report_path: reports/champion.json
+    outs:
+    - path: models/champion
+      hash: md5
+      md5: bea8ba55da21f0964fd8eab3a76be5a8.dir
+      size: 2704192
+      nfiles: 8
+    - path: reports/champion.json
+      hash: md5
+      md5: b7534e2b21d5c55154baba5f60ef07d6
+      size: 223
