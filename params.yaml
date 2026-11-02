@@ -1,0 +1,38 @@
+# Parâmetros do pipeline. O DVC rastreia este arquivo: mudar um valor
+# invalida apenas os estágios que dependem dele no próximo `dvc repro`.
+
+seed: 42
+
+data:
+  raw_path: data/raw/online_shoppers_intention.csv
+  train_path: data/processed/train.parquet
+  test_path: data/processed/test.parquet
+  test_size: 0.2
+
+train:
+  cv_folds: 5
+  runs_path: reports/train_runs.json
+  models:
+    logistic_regression:
+      C: 1.0
+      max_iter: 1000
+    random_forest:
+      n_estimators: 300
+      max_depth: 12
+      min_samples_leaf: 2
+    hist_gradient_boosting:
+      learning_rate: 0.05
+      max_iter: 300
+      max_leaf_nodes: 31
+
+evaluate:
+  threshold: 0.5
+  metrics_path: reports/metrics.json
+  plots_dir: reports/plots
+
+registry:
+  # PR-AUC é mais informativa que acurácia com ~15% de positivos.
+  selection_metric: test_pr_auc
+  model_name: purchase-propensity-model
+  alias: champion
+  export_dir: models/champion
