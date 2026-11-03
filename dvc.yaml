@@ -35,6 +35,7 @@ stages:
       - data/processed/test.parquet
       - reports/train_runs.json
       - src/purchase_propensity/models/evaluator.py
+      - src/purchase_propensity/models/plots.py
       - src/purchase_propensity/io.py
       - src/purchase_propensity/pipelines/evaluate.py
     params:

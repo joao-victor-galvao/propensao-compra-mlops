@@ -80,6 +80,8 @@ def test_champion_registry_promotes_and_exports(
     aliased = MlflowClient().get_model_version_by_alias("test-model", "champion")
     assert aliased.version == version.version
     assert aliased.tags["model_type"] == "logistic_regression"
+    assert "test_pr_auc = 0.7000" in aliased.description
+    assert MlflowClient().get_registered_model("test-model").description
     assert (exported / "MLmodel").exists()
 
 

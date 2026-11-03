@@ -56,6 +56,7 @@ def _predictor(request: Request) -> PurchasePredictor:
 def _register_routes(app: FastAPI) -> None:
     @app.get("/health", tags=["infra"])
     def health(request: Request) -> Health:
+        """Confirma que a API está no ar e informa qual versão do modelo está carregada."""
         predictor = _predictor(request)
         return Health(
             status="ok", model_name=predictor.model_name, model_version=predictor.model_version
@@ -63,10 +64,12 @@ def _register_routes(app: FastAPI) -> None:
 
     @app.post("/predict", tags=["predição"])
     def predict(session: Session, request: Request) -> Prediction:
+        """Retorna a probabilidade de a sessão terminar em compra e a decisão no limiar."""
         return _predictor(request).predict([session])[0]
 
     @app.post("/predict/batch", tags=["predição"])
     def predict_batch(batch: BatchRequest, request: Request) -> BatchPrediction:
+        """Prevê várias sessões de uma vez (até 1.000), na mesma ordem do envio."""
         return BatchPrediction(predictions=_predictor(request).predict(batch.sessions))
 
 

@@ -5,3 +5,7 @@
 # Bytecode do Python não deve invalidar estágios do pipeline
 __pycache__/
 *.pyc
+
+# Metadados que o Windows/OneDrive cria dentro das pastas
+desktop.ini
+Thumbs.db

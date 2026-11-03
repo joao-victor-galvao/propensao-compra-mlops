@@ -65,14 +65,14 @@ flowchart LR
     G -->|versão + alias champion| MR[(MLflow<br/>Model Registry)]
     G --> C[models/champion]
     C --> A[API FastAPI<br/>/predict]
-    A -.->|opcional| HF[Hugging Face Spaces]
+    A -.->|opcional, HF PRO| HF[Hugging Face Spaces]
 ```
 
 ## Como rodar
 
 ### Pré-requisitos
 
-- [Docker](https://docs.docker.com/get-docker/) com Docker Compose v2
+- [Docker](https://docs.docker.com/get-docker/) com Docker Compose 2.24 ou superior
 - Para rodar fora do Docker: Python 3.12 e [Poetry](https://python-poetry.org/docs/#installation) 2.x
 - Para baixar os dados versionados: token do DagsHub (*Your Settings → Tokens → Default Access Token*)
 
@@ -81,7 +81,7 @@ flowchart LR
 ```bash
 git clone https://github.com/joao-victor-galvao/propensao-compra-mlops.git
 cd propensao-compra-mlops
-cp .env.example .env   # preencha DAGSHUB_USER e DAGSHUB_TOKEN
+cp .env.example .env   # preencha DAGSHUB_USER e DAGSHUB_TOKEN (no PowerShell: Copy-Item .env.example .env)
 ```
 
 ### 2. Instalar as dependências (do zero, a partir do lock)
@@ -100,29 +100,30 @@ poetry run dvc pull
 ```
 
 > Alternativa sem DagsHub: `scripts/download_data.sh` (ou `.ps1` no Windows) baixa o CSV original pelo
-> Kaggle CLI. O hash é o mesmo, então o DVC reconhece o arquivo.
+> Kaggle CLI (`pip install kaggle` e credenciais em `~/.kaggle`). O arquivo é idêntico, então o DVC o reconhece
+> pelo hash.
 
 ### 4a. Rodar tudo com Docker (recomendado)
 
 ```bash
-docker compose up -d mlflow           # MLflow em http://localhost:5000
-docker compose run --rm pipeline      # dvc repro: preprocess -> train -> evaluate -> register
-docker compose up -d --build api      # API em http://localhost:8000/docs
+docker compose up -d mlflow                                                       # MLflow em http://localhost:5000
+docker compose run --rm pipeline dvc repro -f -s preprocess train evaluate register   # treina e registra
+docker compose up -d --build api                                                  # API em http://localhost:8000/docs
 ```
+
+> **Por que forçar (`-f`) na primeira execução?** Depois do `dvc pull`, o DVC já tem os resultados do
+> `dvc.lock` e diria que está tudo em dia, sem executar nada. O servidor MLflow, porém, começa vazio. Forçar os
+> quatro estágios (`-s` deixa de fora o arquivo bruto versionado) recria as runs e o Model Registry. Nas
+> execuções seguintes basta `docker compose run --rm pipeline`, que roda só o que mudou.
 
 O container `pipeline` monta o repositório em `/app`, então `dvc.lock`, `reports/` e `models/` são atualizados
-no seu diretório. Se o pipeline já estiver em dia, o DVC não reexecuta nada. Para forçar todos os estágios
-(por exemplo, com um servidor MLflow novo):
-
-```bash
-docker compose run --rm pipeline dvc repro -f -s preprocess train evaluate register
-```
+no seu diretório.
 
 ### 4b. Rodar localmente com Poetry
 
 ```bash
-docker compose up -d mlflow           # ou deixe MLFLOW_TRACKING_URI vazio para usar sqlite:///mlflow.db
-poetry run dvc repro
+docker compose up -d mlflow           # ou remova MLFLOW_TRACKING_URI do .env para usar sqlite:///mlflow.db
+poetry run dvc repro -f -s preprocess train evaluate register
 poetry run uvicorn purchase_propensity.api.main:app --reload
 ```
 
@@ -158,8 +159,8 @@ dependências de **dados, código e parâmetros**, então mudar um hiperparâmet
   - **artefatos:** modelo (formato MLflow + `skops`, com *signature* e *input example*) e gráficos em `evaluation/`
   - **tags de linhagem:** `data_version` (MD5 do dataset no DVC), commit git e tipo de modelo
 - **Model Registry:** `purchase-propensity-model`. A cada execução do `register`, o vencedor ganha uma nova versão
-  e o alias **`champion`** passa a apontar para ela. Aliases substituem os *stages*, que foram depreciados no
-  MLflow 3. A versão recebe as tags `model_type`, `selection_metric` e `selection_score`.
+  e o alias **`champion`** passa a apontar para ela. Aliases substituem os *stages*, descontinuados
+  (*deprecated*) no MLflow 3. A versão recebe as tags `model_type`, `selection_metric` e `selection_score`.
 - O modelo é carregável por `models:/purchase-propensity-model@champion` ou, offline, por `models/champion/`
   (rastreado pelo DVC).
 
@@ -178,7 +179,16 @@ Conjunto de teste (2.441 sessões, nunca vistas no treino), limiar 0,5:
   campeão chega a 0,740.
 - ROC-AUC e PR-AUC de validação cruzada e de teste diferem menos de 0,02 em todos os modelos: sem sinal de overfitting.
 - As métricas são **idênticas** entre Windows (Poetry local) e Linux (container), graças à seed única e ao lock.
-- Gráficos em [`reports/plots/`](reports/plots/) e na aba *Artifacts* de cada run.
+- Gráficos em [`reports/plots/`](reports/plots/) e na aba *Artifacts* de cada run (pasta `evaluation/`).
+
+![Comparação dos modelos](reports/plots/comparison_metrics.png)
+
+| Curvas Precision-Recall | Matriz de confusão do campeão |
+|---|---|
+| ![Curvas PR](reports/plots/comparison_pr_curves.png) | ![Matriz de confusão](reports/plots/hist_gradient_boosting/confusion_matrix.png) |
+
+Com o limiar de 0,5, o campeão identifica **77% das sessões que compram** (295 de 382) e erra em 10% das que
+não compram (207 de 2.059).
 
 ## API de inferência
 
@@ -214,7 +224,7 @@ O GitHub Actions ([`ci.yml`](.github/workflows/ci.yml)) roda em todo PR e push n
 1. `poetry check --lock` + instalação limpa a partir do lock
 2. `ruff check` e `ruff format --check`
 3. `mypy --strict`
-4. `pytest` com cobertura: dados, features, modelos, MLflow (SQLite isolado), Registry e API
+4. `pytest` com cobertura: dados, features, modelos, gráficos, MLflow (SQLite isolado), Registry e API
 5. `dvc dag` (valida o `dvc.yaml`)
 6. Build da imagem Docker
 
@@ -228,7 +238,7 @@ Localmente, o [`pre-commit`](.pre-commit-config.yaml) aplica as mesmas regras: `
 │   ├── io.py                   # JSON trocado entre estágios
 │   ├── data/                   # schema, validação, leitura/escrita, limpeza e split
 │   ├── features/               # ColumnTransformer (escala + one-hot)
-│   ├── models/                 # fábrica de modelos, trainer, avaliação, tracking, registry
+│   ├── models/                 # fábrica de modelos, trainer, métricas, gráficos, tracking, registry
 │   ├── pipelines/              # entrypoints de cada estágio do DVC
 │   └── api/                    # FastAPI: schemas, predictor e rotas
 ├── tests/                      # pytest
@@ -237,7 +247,6 @@ Localmente, o [`pre-commit`](.pre-commit-config.yaml) aplica as mesmas regras: `
 ├── models/champion/            # modelo campeão exportado (saída do DVC)
 ├── reports/                    # métricas, runs, campeão e gráficos
 ├── scripts/                    # download do Kaggle e deploy no HF Spaces
-├── docs/video_star.md          # roteiro do vídeo de 5 minutos
 ├── dvc.yaml / dvc.lock / params.yaml
 ├── Dockerfile / docker-compose.yml / .dockerignore
 ├── pyproject.toml / poetry.lock
