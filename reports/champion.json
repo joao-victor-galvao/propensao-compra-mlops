@@ -3,6 +3,6 @@
   "version": "1",
   "alias": "champion",
   "model_type": "hist_gradient_boosting",
-  "run_id": "86f460c7bee44c00a376674cec076a03",
+  "run_id": "276ec9bf96b64d62a50937df3e24a18d",
   "test_pr_auc": 0.740474016748965
 }
