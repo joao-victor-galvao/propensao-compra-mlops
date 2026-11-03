@@ -12,6 +12,12 @@ from mlflow.entities.model_registry import ModelVersion
 from purchase_propensity.config import RegistryParams
 from purchase_propensity.models.trainer import MODEL_ARTIFACT_NAME
 
+MODEL_DESCRIPTION = (
+    "Propensão de compra de uma sessão de e-commerce (dataset Online Shoppers Purchasing "
+    "Intention). Pipeline Scikit-Learn com pré-processamento embutido; retorna a probabilidade "
+    "de a sessão terminar em compra. O alias 'champion' aponta para a versão em produção."
+)
+
 
 @dataclass(frozen=True)
 class Candidate:
@@ -67,6 +73,7 @@ class ChampionRegistry:
             self._params.model_name, self._params.alias, version.version
         )
         self._tag_version(version, candidate)
+        self._describe(version, candidate)
         return version
 
     def export(self) -> Path:
@@ -92,3 +99,15 @@ class ChampionRegistry:
         }
         for key, value in tags.items():
             self._client.set_model_version_tag(self._params.model_name, version.version, key, value)
+
+    def _describe(self, version: ModelVersion, candidate: Candidate) -> None:
+        # Descrições aparecem na UI do Registry: deixam claro o que é o modelo e por que venceu.
+        self._client.update_registered_model(self._params.model_name, description=MODEL_DESCRIPTION)
+        self._client.update_model_version(
+            self._params.model_name,
+            version.version,
+            description=(
+                f"Vencedor entre os candidatos: {candidate.model_name}, com "
+                f"{self._params.selection_metric} = {candidate.score:.4f} (run {candidate.run_id})."
+            ),
+        )
