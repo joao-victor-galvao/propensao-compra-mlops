@@ -1,4 +1,4 @@
-# Propensão de Compra — MLOps
+# Propensão de Compra
 
 [![CI](https://github.com/joao-victor-galvao/propensao-compra-mlops/actions/workflows/ci.yml/badge.svg)](https://github.com/joao-victor-galvao/propensao-compra-mlops/actions/workflows/ci.yml)
 ![Python](https://img.shields.io/badge/python-3.12-blue)
@@ -6,19 +6,28 @@
 ![DVC](https://img.shields.io/badge/data-DVC-945DD6)
 ![MLflow](https://img.shields.io/badge/tracking-MLflow-0194E2)
 
-Tech Challenge Fase 2 — FIAP Pós Tech **Machine Learning Engineering (11MLET)**.
+Previsão da probabilidade de uma sessão de e-commerce terminar em compra, a partir do comportamento de
+navegação. O projeto cobre o ciclo completo: dados versionados, treino rastreado, promoção governada do modelo
+e serviço por API, tudo reproduzível com poucos comandos.
 
-Um e-commerce quer saber **quais sessões de navegação vão terminar em compra**. Este repositório entrega um
-pipeline de Machine Learning **reprodutível de ponta a ponta**. O foco é a engenharia, não a complexidade do modelo:
+Lojas virtuais convertem uma fração pequena das visitas. Identificar cedo as sessões com intenção de compra
+permite concentrar incentivos (cupom, frete, atendimento) onde eles mudam o resultado, em vez de
+distribuí-los a todos.
 
-| Pilar | Como foi resolvido |
-|---|---|
-| Clean Code | `src/` layout, módulos curtos, funções ≤ ~20 linhas, type hints + `mypy --strict`, Ruff (lint, docstrings, complexidade ≤ 6) |
-| Reprodutibilidade | Poetry com `poetry.lock`, Python 3.12 fixado, seed única no `params.yaml`, `.env` para configuração |
-| Docker | `Dockerfile` multi-stage (Poetry só no build, usuário não-root) + `docker-compose` com MLflow, pipeline e API |
-| DVC | Dataset versionado, remote no DagsHub, `dvc.yaml` com 4 estágios e cache por dependência |
-| MLflow | Tracking de params/métricas/modelos, linhagem (versão dos dados e commit), Model Registry com alias `champion` |
-| Modelagem | 3 classificadores Scikit-Learn comparados por validação cruzada estratificada |
+**Modelo em produção:** HistGradientBoosting, com ROC-AUC de 0,93 e PR-AUC de 0,74 no conjunto de teste
+(a linha de base aleatória é 0,16).
+
+## Destaques
+
+- **Reproduzível em qualquer máquina.** Dependências travadas no `poetry.lock`, dados e pipeline no DVC, semente
+  única e execução em Docker. O mesmo commit produz as mesmas métricas no Windows e no Linux.
+- **Rastreabilidade de ponta a ponta.** Cada run do MLflow guarda parâmetros, métricas, gráficos e modelo, além
+  do commit do código e do hash dos dados que a originaram.
+- **Promoção governada.** O critério de escolha (PR-AUC no teste) é versionado no `params.yaml`. O vencedor ganha
+  uma nova versão no Model Registry, com descrição, tags e o alias `champion`.
+- **Pronto para servir.** API FastAPI com validação de entrada e healthcheck, numa imagem multi-stage e
+  não-root gerada pelo mesmo Dockerfile do treino.
+- **Qualidade contínua.** Lint, tipagem estrita, testes automatizados e build da imagem a cada pull request.
 
 ---
 
@@ -34,6 +43,7 @@ pipeline de Machine Learning **reprodutível de ponta a ponta**. O foco é a eng
 - [Qualidade e CI](#qualidade-e-ci)
 - [Estrutura do repositório](#estrutura-do-repositório)
 - [Decisões de engenharia](#decisões-de-engenharia)
+- [Contexto](#contexto)
 
 ## Dataset
 
@@ -257,6 +267,8 @@ Localmente, o [`pre-commit`](.pre-commit-config.yaml) aplica as mesmas regras: `
 
 - **Pré-processamento dentro do `Pipeline` do Scikit-Learn:** o mesmo objeto é treinado, logado e servido. Sem
   divergência entre treino e inferência e sem vazamento do teste para o scaler.
+- **Código organizado por responsabilidade:** um módulo por etapa (dados, features, modelos, pipelines, API), com
+  funções curtas, tipadas e documentadas. Ruff e mypy em modo estrito barram regressões no CI.
 - **POO onde há estado, funções puras onde não há:** `ModelTrainer`, `ChampionRegistry` e `PurchasePredictor`
   encapsulam configuração e recursos; limpeza, split, métricas e seleção do campeão são funções puras e
   testáveis isoladamente.
@@ -271,3 +283,7 @@ Localmente, o [`pre-commit`](.pre-commit-config.yaml) aplica as mesmas regras: `
 - **Segredos:** só no `.env` e no `.dvc/config.local`, ambos ignorados pelo Git e pelo Docker.
 - **Finais de linha LF fixos** (`.gitattributes` e escrita de JSON): os hashes do DVC são os mesmos no Windows e
   no Linux.
+
+## Contexto
+
+Projeto desenvolvido no Tech Challenge da Fase 2 da Pós Tech em Machine Learning Engineering (FIAP).

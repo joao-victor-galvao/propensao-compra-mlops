@@ -31,8 +31,8 @@ short_description: Probabilidade de uma sessão de e-commerce terminar em compra
 
 # Propensão de Compra — API
 
-API FastAPI do Tech Challenge Fase 2 (FIAP 11MLET). Serve o modelo `champion` do MLflow
-Model Registry. Documentação interativa em `/docs`.
+Probabilidade de uma sessão de e-commerce terminar em compra. Serve o modelo `champion` do
+MLflow Model Registry. Documentação interativa em `/docs`.
 
 Código, pipeline DVC e experimentos: https://github.com/joao-victor-galvao/propensao-compra-mlops
 """
